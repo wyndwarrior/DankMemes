@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Identity by HTML5 UP</title>
+		<title>Meme Generator</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
@@ -94,7 +94,8 @@
 			            type: "GET",
 			            data: {range: document.getElementById("myRange").value, range1: document.getElementById("myRange1").value},
 			            success: function (response) {
-			                $('#imagediv').attr('src', response);
+			                $('#imagediv').attr('src', '/send_img?' + new Date().getTime());
+
 			            },
 			        });
 			    });

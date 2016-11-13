@@ -1,6 +1,6 @@
 from flask import Flask
-from flask import send_from_directory
-from flask import render_template, Response, request, redirect, url_for
+from flask import send_from_directory, make_response
+from flask import render_template, Response, request, redirect, url_for, send_file
 from werkzeug import secure_filename
 from PIL import Image
 from PIL import ImageDraw
@@ -14,25 +14,30 @@ def draw_caption(img, text, top=False):
 	draw = ImageDraw.Draw(img)
 	#Find a suitable font size to fill the entire width:
 	w = img.size[0]
-	s = 100
+	s = 60
 	while w >= (img.size[0] - 20):
-		#font = ImageFont.truetype("arial.ttf", 15)
-		w, h = draw.textsize(text)
+		#font = ImageFont.load_default()
+		font = ImageFont.truetype("./static/impact.ttf", size=s)
+		w, h = draw.textsize(text, font=font)
 		s -= 1
 		if s <= 12: break
 	#Draw the text multiple times in black to get the outline:
 	for x in range(-3, 4):
 		for y in range(-3, 4):
 			draw_y = y if top else img.size[1] - h + y
-			draw.text((10 + x, draw_y), text, fill='black')
+			draw.text((10 + x, draw_y), text, font=font, fill='black')
 	#Draw the text once more in white:
 	draw_y = 0 if top else img.size[1] - h
-	draw.text((10, draw_y), text, fill='white')
+	draw.text((10, draw_y), text, font=font, fill='white')
 
 @app.route('/')
 @app.route('/index')
 def index():
 	return render_template("index.html")
+
+@app.route('/send_img')
+def send_img():
+	return send_from_directory('./tmp', 'test.jpg')
 
 @app.route('/get_meme', methods=['GET', 'POST'])
 def get_memes():
@@ -43,18 +48,25 @@ def get_memes():
 	range2 = args['range1']
 
 	#put text here
-	sample_txt = "sample text"
+	sample_txt = "sample text 3"
 
-	#open image here
+	#open image to use here
 	img = Image.open("./static/kronwall.jpg")
 
-	#add caption need to fix font size
+
+	# resize to height 300
+	baseheight = 300
+	hpercent = (baseheight/float(img.size[1]))
+	wsize = int((float(img.size[0])*float(hpercent)))
+	img = img.resize((wsize,baseheight), Image.ANTIALIAS)
+
+	#add caption
 	draw_caption(img, sample_txt, top=True)
 
-	#save to show
-	img.save("./static/test.jpg")
-	resp = Response("./static/test.jpg")
-	return resp
+	#save to show. THE FILE NAME HERE WILL BE USED AGAIN AT SEND_IMG
+	img.save("./tmp/test.jpg")
+	#Response here is never used. Doesnt really matter
+	return Response("./tmp/test.jpg")
 
 if __name__ == '__main__':
    app.run()
