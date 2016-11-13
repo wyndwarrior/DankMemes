@@ -23,6 +23,7 @@ from im2txt.inference_utils import vocabulary
 from os import listdir
 from os.path import isfile, join
 
+import cPickle as pickle
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "./tmp"
 
@@ -66,6 +67,12 @@ def send_img():
 
 import numpy as np
 
+with open("/home/andrewliu/berkeley/calhacks/memes.pkl", "rb") as pfile:
+    tcnt = pickle.load(pfile)
+imgs = list(tcnt.keys())
+probs = np.array([tcnt[i] for i in imgs], dtype="float64")
+probs /= np.sum(probs)
+
 @app.route('/get_meme', methods=['GET', 'POST'])
 def get_memes():
 	args = request.args.to_dict()
@@ -74,9 +81,9 @@ def get_memes():
 	range1 = args['range']
 	range2 = args['range1']
 
-        imgs = listdir("./static/train/")
+        # imgs = listdir("./static/train/")
         idx = np.random.choice(range(len(imgs)), 1)[0]
-        filename = "./static/train/" + imgs[idx]
+        filename = "./static/train/" + str(imgs[idx]) + ".jpg"
 
         with tf.Session(graph=g) as sess:
             restore_fn(sess)
@@ -85,11 +92,13 @@ def get_memes():
                 image = f.read()
             captions = []
             while len(captions) == 0:
-                captions = generator.beam_search(sess, image, np.random.uniform(0.2, 1.2, 1)[0])
+                temp = np.random.uniform(0.2, .8, 1)[0]
+                print(temp)
+                captions = generator.beam_search(sess, image, temp)
             caption = captions[0]
             sentence = [vocab.id_to_word(w) for w in caption.sentence[1:-1]]
             sentence = " ".join(sentence)
-            sentence = sentence.replace(" n't", "n't").replace(" 're", "'re").replace(" ?", "?").replace(" .", ".").replace(" 'm", "'m").upper().split(" ")
+            sentence = sentence.replace(" n't", "n't").replace(" 're", "'re").replace(" ?", "?").replace(" .", ".").replace(" 'm", "'m").replace(" 's", "'s").replace(" na", "na").upper().split(" ")
 
             cap1 = sentence[:int(len(sentence)/2)]
             cap2 = sentence[int(len(sentence)/2):]

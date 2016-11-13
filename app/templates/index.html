@@ -23,15 +23,26 @@
 				<!-- Main -->
 					<section id="main">
 						<header>
-							<span class="avatar"><img src="static/images/Hashbrown_Logo_Small.png" alt="" /></span>
+                             <h1>Dank Memes!</h1>
 
-							<h1>Dank Memes!</h1>
 
-							<img src="" id="imagediv"></img>
 
-							<input type="range" id="myRange" value="100">
+							<img src="" id="imagediv0"></img>
+							<img src="" id="imagediv1"></img>
+							<img src="" id="imagediv2"></img>
+							<img src="" id="imagediv3"></img>
+							<img src="" id="imagediv4"></img>
+							<img src="" id="imagediv5"></img>
+							<img src="" id="imagediv6"></img>
+							<img src="" id="imagediv7"></img>
+							<img src="" id="imagediv8"></img>
+							<img src="" id="imagediv9"></img>
+							
+							<img src="" id="imagediv10"></img>
+							<img src="" id="imagediv11"></img>
+                            <!--input type="range" id="myRange" value="100">
 
-							<input type="range" id="myRange1" value="100">
+							<input type="range" id="myRange1" value="100"-->
 
 							<button type="button" id="mybtn">Generate Meme!</button>
 
@@ -87,18 +98,22 @@
 					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
 					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
 				}
-
-			$('#mybtn').click(function (event) {
+            var curdiv = 0
+			var gen = function (event) {
 			        $.ajax({
 			            url: "/get_meme",
 			            type: "GET",
-			            data: {range: document.getElementById("myRange").value, range1: document.getElementById("myRange1").value},
+			            data: {range: 1.0 //document.getElementById("myRange").value
+                            , range1: 1.0 //document.getElementById("myRange1").value
+                        },
 			            success: function (response) {
-			                $('#imagediv').attr('src', '/send_img?' + new Date().getTime());
-
+			                $('#imagediv' + curdiv).attr('src', '/send_img?' + new Date().getTime());
+                            curdiv = (curdiv + 1)%12;
+                            setTimeout(gen, 10);
 			            },
 			        });
-			    });
+			    };
+            $("#mybtn").click(gen);
 			</script>
 
 
