@@ -23,7 +23,7 @@ class MemesSpider(scrapy.Spider):
         ]
 
         for subreddit in subreddits:
-            for page_type in ['top/', 'top/?sort=top&t=all']:
+            for page_type in ['', 'top/', 'top/?sort=top&t=all']:
                 request = scrapy.Request(url=reddit_url+subreddit, callback=self.parse_reddit)
                 request.meta['subreddit'] = subreddit
                 yield request
