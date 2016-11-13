@@ -1,14 +1,12 @@
-<h1>Dank Meme!</h1>
+<h1>Dank Memes!</h1>
+
+<input type="range" id="myRange" value="100">
+
+<input type="range" id="myRange1" value="100">
 
 <button type="button" id="mybtn">Click Me!</button>
 
 <img src="" id="imagediv"></img>
-
-<!-- <form action = "http://localhost:5000/get_meme" method = "POST" 
-     enctype = "multipart/form-data">
-     <input type = "file" name = "file" />
-     <input type = "submit"/>
-</form> -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
@@ -16,8 +14,8 @@
 $('#mybtn').click(function (event) {
         $.ajax({
             url: "/get_meme",
-            type: "POST",
-            data: { 'data': "test"},
+            type: "GET",
+            data: {range: document.getElementById("myRange").value, range1: document.getElementById("myRange1").value},
             success: function (response) {
                 $('#imagediv').attr('src', response);
             },

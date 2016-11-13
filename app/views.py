@@ -36,6 +36,12 @@ def index():
 
 @app.route('/get_meme', methods=['GET', 'POST'])
 def get_memes():
+	args = request.args.to_dict()
+
+	#These are from the two sliders do whatever you want with them
+	range1 = args['range']
+	range2 = args['range1']
+
 	#put text here
 	sample_txt = "sample text"
 
@@ -49,7 +55,6 @@ def get_memes():
 	img.save("./static/test.jpg")
 	resp = Response("./static/test.jpg")
 	return resp
-
 
 if __name__ == '__main__':
    app.run()
