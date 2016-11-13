@@ -12,7 +12,7 @@ captions = []
 filenames = []
 
 counter = 1000000
-for meme in data[:10]:
+for meme in data:
 	filename = 'reddit/' + str(counter)
 	urllib.request.urlretrieve(meme['meme_url'], filename)
 	mime_type = magic.from_file(filename, mime=True)

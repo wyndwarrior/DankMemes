@@ -6,8 +6,8 @@ def is_gif(url):
 def is_image(url):
     return url[-4:] == '.jpg' or url[-5:] == '.jpeg' or url[-4:] == '.png'
 
-class QuotesSpider(scrapy.Spider):
-    name = "quotes"
+class MemesSpider(scrapy.Spider):
+    name = "memes"
 
     def __init__(self):
         self.NUM_PAGES = 1
