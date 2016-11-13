@@ -20,6 +20,7 @@ class MemesSpider(scrapy.Spider):
             'r/memes/',
             'r/funny/',
             'r/harambe/',
+            'r/dank_meme/',
         ]
 
         for subreddit in subreddits:
@@ -34,11 +35,15 @@ class MemesSpider(scrapy.Spider):
             meme_url = post.css('a::attr(href)').extract_first()
             title = post.css('a::text').extract_first()
 
-            # skip comments (TODO)
             if meme_url.lower().find(response.meta['subreddit']) >= 0:
+                full_next_url = response.urljoin(meme_url)
+                request = scrapy.Request(full_next_url, callback=self.parse_reddit_deep)
+                request.meta['subreddit'] = response.meta['subreddit']
+                request.meta['likes'] = likes
+                request.meta['title'] = title
+                yield request
                 continue
 
-            # skip gifs
             if is_gif(meme_url):
                 continue
 
@@ -58,6 +63,22 @@ class MemesSpider(scrapy.Spider):
             yield request
         except TypeError:
             pass
+
+    def parse_reddit_deep(self, response):
+        meme_url = response.css('div.media-preview-content a::attr(href)').extract_first()
+        if meme_url is not None:
+            if is_gif(meme_url):
+                return
+
+            if meme_url.find('imgur') >= 0 and not is_image(meme_url):
+                meme_url += '.jpg'      # code alert!
+
+            yield {
+                'likes': response.meta['likes'],
+                'meme_url': meme_url,
+                'title': response.meta['title'],
+                'subreddit': response.meta['subreddit']
+            }
 
     def parse_meme_generator(self, response):
         for quote in response.css('div.item_medium_small'):
