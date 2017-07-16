@@ -1,3 +1,3 @@
 # DankMemes
 
-scrapy crawl quotes -o memes.json
+Dank Meme generation with image captioning model. Calhacks 2016
